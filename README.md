@@ -14,7 +14,11 @@ You must create a PostgreSQL database and provide its connection details in the 
 ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=black)
 ![JUnit](https://img.shields.io/badge/JUnit-25A162?logo=junit5&logoColor=white)
 
-
+## 🗄️ Database Test Script
+In the `src/main/resources` folder, the `dataTest.sql` script was added,
+which contains test data for the database.
+This file provides initial information to perform tests and validations
+without the need to insert records manually.
 
 ## 📚 Swagger
 
@@ -23,3 +27,4 @@ You can explore and test the API from **Swagger UI**:
 http://localhost:8089/swagger-ui/index.html
 
 ![Captura de pantalla de Swagger UI](src/main/resources/images/swagger-ui-screenshot.png)
+
