@@ -1,0 +1,5 @@
+server:
+  port: "${SPRING_PORT}"
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
