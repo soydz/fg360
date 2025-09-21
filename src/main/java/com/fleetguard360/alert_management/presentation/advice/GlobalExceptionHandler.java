@@ -1,78 +1,72 @@
 package com.fleetguard360.alert_management.presentation.advice;
 
-import com.fleetguard360.alert_management.presentation.DTO.common.ErrorResponse;
 import com.fleetguard360.alert_management.service.exception.BadRequestException;
 import com.fleetguard360.alert_management.service.exception.ConflictException;
-import jakarta.servlet.http.HttpServletRequest;
+import com.fleetguard360.alert_management.service.exception.NotFoundException;
+import graphql.GraphQLError;
+import graphql.GraphqlErrorBuilder;
+import graphql.schema.DataFetchingEnvironment;
 import jakarta.validation.ConstraintViolationException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter;
+import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
-@RestControllerAdvice
-public class GlobalExceptionHandler {
+@Component
+public class GlobalExceptionHandler extends DataFetcherExceptionResolverAdapter {
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
-        log.warn("400 Bad Request: {} - path={} ", ex.getMessage(), request.getRequestURI());
-        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
-    }
+    @Override
+    protected GraphQLError resolveToSingleError(Throwable ex, DataFetchingEnvironment env) {
+        String traceId = UUID.randomUUID().toString();
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponse> handleConflict(ConflictException ex, HttpServletRequest request) {
-        log.warn("409 Conflict: {} - path={} ", ex.getMessage(), request.getRequestURI());
-        return build(HttpStatus.CONFLICT, ex.getMessage(), request);
-    }
+        int status;
+        String code;
+        String message = ex.getMessage();
+        List<Map<String, String>> details = new ArrayList<>();
+        Map<String, Object> extensions = new LinkedHashMap<>();
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .collect(Collectors.joining(", "));
-        log.warn("400 Validation Error: {} - path={}", message, request.getRequestURI());
-        return build(HttpStatus.BAD_REQUEST, message, request);
-    }
+        if (ex instanceof BadRequestException) {
+            status = 400;
+            code = "BAD_REQUEST";
+        } else if (ex instanceof ConflictException) {
+            status = 409;
+            code = "CONFLICT";
+        } else if (ex instanceof NotFoundException) {
+            status = 404;
+            code = "NOT_FOUND";
+        } else if (ex instanceof ConstraintViolationException cve) {
+            status = 400;
+            code = "BAD_REQUEST";
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
-        String message = ex.getConstraintViolations().stream()
-                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
-                .collect(Collectors.joining(", "));
-        log.warn("400 Constraint Violation: {} - path={}", message, request.getRequestURI());
-        return build(HttpStatus.BAD_REQUEST, message, request);
-    }
+            // Lista de errores detallados
+            details = cve.getConstraintViolations().stream()
+                    .map(v -> Map.of(
+                            "field", v.getPropertyPath().toString(),
+                            "message", v.getMessage()
+                    ))
+                    .toList();
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
-        log.error("500 Internal Server Error: {} - path={}", ex.getMessage(), request.getRequestURI(), ex);
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor", request);
-    }
+            // Mensaje general
+            message = "Error de validación en uno o más campos";
 
-    private ResponseEntity<ErrorResponse> build(HttpStatus status, String message, HttpServletRequest request) {
-        String traceId = getTraceId(request);
-        ErrorResponse body = new ErrorResponse(
-                OffsetDateTime.now(),
-                status.value(),
-                status.getReasonPhrase(),
-                message,
-                request.getRequestURI(),
-                traceId
-        );
-        return ResponseEntity.status(status).body(body);
-    }
-
-    private String getTraceId(HttpServletRequest request) {
-        String traceId = request.getHeader("X-Request-Id");
-        if (traceId == null || traceId.isBlank()) {
-            traceId = request.getHeader("X-Correlation-Id");
+        } else {
+            status = 500;
+            code = "INTERNAL_ERROR";
+            message = (message != null) ? message : "Unexpected error";
         }
-        return (traceId != null && !traceId.isBlank()) ? traceId : null;
+
+        extensions.put("code", code);
+        extensions.put("status", status);
+        extensions.put("timestamp", OffsetDateTime.now().toString());
+        extensions.put("traceId", traceId);
+        extensions.put("field", env.getField().getName());
+        if (!details.isEmpty()) extensions.put("details", details);
+
+        return GraphqlErrorBuilder.newError(env)
+                .message(message)
+                .extensions(extensions)
+                .build();
     }
 }
