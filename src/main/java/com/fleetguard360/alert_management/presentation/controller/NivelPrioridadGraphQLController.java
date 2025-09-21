@@ -4,6 +4,7 @@ import com.fleetguard360.alert_management.presentation.DTO.nivelprioridad.NivelP
 import com.fleetguard360.alert_management.presentation.DTO.nivelprioridad.NivelPrioridadResponse;
 import com.fleetguard360.alert_management.presentation.DTO.nivelprioridad.NivelPrioridadUpdateRequest;
 import com.fleetguard360.alert_management.service.interfaces.NivelPrioridadService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -33,13 +34,13 @@ public class NivelPrioridadGraphQLController {
     }
 
     @MutationMapping
-    public NivelPrioridadResponse createNivelPrioridad(@Argument("input") NivelPrioridadCreateRequest input) {
+    public NivelPrioridadResponse createNivelPrioridad(@Argument("input") @Valid NivelPrioridadCreateRequest input) {
         log.debug("GraphQL Mutation: createNivelPrioridad nombre='{}'", input.nombre());
         return nivelPrioridadService.create(input);
     }
 
     @MutationMapping
-    public NivelPrioridadResponse updateNivelPrioridad(@Argument Integer id, @Argument("input") NivelPrioridadUpdateRequest input) {
+    public NivelPrioridadResponse updateNivelPrioridad(@Argument Integer id, @Argument("input") @Valid NivelPrioridadUpdateRequest input) {
         log.debug("GraphQL Mutation: updateNivelPrioridad id={}", id);
         return nivelPrioridadService.update(id, input);
     }

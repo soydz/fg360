@@ -4,6 +4,7 @@ import com.fleetguard360.alert_management.presentation.DTO.tipoalerta.TipoAlerta
 import com.fleetguard360.alert_management.presentation.DTO.tipoalerta.TipoAlertaResponse;
 import com.fleetguard360.alert_management.presentation.DTO.tipoalerta.TipoAlertaUpdateRequest;
 import com.fleetguard360.alert_management.service.interfaces.TipoAlertaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -33,13 +34,13 @@ public class TipoAlertaGraphQLController {
     }
 
     @MutationMapping
-    public TipoAlertaResponse createTipoAlerta(@Argument("input") TipoAlertaCreateRequest input) {
+    public TipoAlertaResponse createTipoAlerta(@Argument("input") @Valid TipoAlertaCreateRequest input) {
         log.debug("GraphQL Mutation: createTipoAlerta nombre='{}'", input.nombre());
         return tipoAlertaService.create(input);
     }
 
     @MutationMapping
-    public TipoAlertaResponse updateTipoAlerta(@Argument Integer id, @Argument("input") TipoAlertaUpdateRequest input) {
+    public TipoAlertaResponse updateTipoAlerta(@Argument Integer id, @Argument("input") @Valid TipoAlertaUpdateRequest input) {
         log.debug("GraphQL Mutation: updateTipoAlerta id={}", id);
         return tipoAlertaService.update(id, input);
     }

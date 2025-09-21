@@ -4,6 +4,7 @@ import com.fleetguard360.alert_management.presentation.DTO.configuracionalerta.C
 import com.fleetguard360.alert_management.presentation.DTO.configuracionalerta.ConfiguracionAlertaResponse;
 import com.fleetguard360.alert_management.presentation.DTO.configuracionalerta.ConfiguracionAlertaUpdateRequest;
 import com.fleetguard360.alert_management.service.interfaces.ConfiguracionAlertaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -51,13 +52,13 @@ public class ConfiguracionAlertaGraphQLController {
     }
 
     @MutationMapping
-    public ConfiguracionAlertaResponse createConfiguracionAlerta(@Argument("input") ConfiguracionAlertaCreateRequest input) {
+    public ConfiguracionAlertaResponse createConfiguracionAlerta(@Argument("input") @Valid ConfiguracionAlertaCreateRequest input) {
         log.debug("GraphQL Mutation: createConfiguracionAlerta tipoAlertaId={} nivelPrioridadId={} usuarioResponsableId={}", input.tipoAlertaId(), input.nivelPrioridadId(), input.usuarioResponsableId());
         return configuracionAlertaService.create(input);
     }
 
     @MutationMapping
-    public ConfiguracionAlertaResponse updateConfiguracionAlerta(@Argument Integer id, @Argument("input") ConfiguracionAlertaUpdateRequest input) {
+    public ConfiguracionAlertaResponse updateConfiguracionAlerta(@Argument Integer id, @Argument("input") @Valid ConfiguracionAlertaUpdateRequest input) {
         log.debug("GraphQL Mutation: updateConfiguracionAlerta id={}", id);
         return configuracionAlertaService.update(id, input);
     }
