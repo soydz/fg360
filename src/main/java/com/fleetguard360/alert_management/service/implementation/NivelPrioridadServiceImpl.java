@@ -29,7 +29,7 @@ public class NivelPrioridadServiceImpl implements NivelPrioridadService {
 
     @Override
     public NivelPrioridadResponse create(NivelPrioridadCreateRequest request) {
-        log.debug("Creando NivelPrioridad nombre='{}' color='{}'", request.nombre(), request.colorHex());
+        log.debug("Creando NivelPrioridad nombre='{}'", request.nombre());
         String normalizedNombre = request.nombre().trim();
         if (nivelPrioridadRepository.existsByNombreIgnoreCase(normalizedNombre)) {
             log.warn("Intento de crear NivelPrioridad duplicado nombre='{}'", normalizedNombre);
@@ -38,7 +38,6 @@ public class NivelPrioridadServiceImpl implements NivelPrioridadService {
 
         NivelPrioridad entity = new NivelPrioridad();
         entity.setNombre(normalizedNombre);
-        entity.setColorHex(request.colorHex());
         NivelPrioridad saved = nivelPrioridadRepository.save(entity);
         log.info("NivelPrioridad creado id={} nombre='{}'", saved.getId(), saved.getNombre());
         return mapper.toResponse(saved);
@@ -58,9 +57,6 @@ public class NivelPrioridadServiceImpl implements NivelPrioridadService {
                 throw new ConflictException("Ya existe un NivelPrioridad con ese nombre");
             }
             entity.setNombre(normalizedNombre);
-        }
-        if (request.colorHex() != null) {
-            entity.setColorHex(request.colorHex());
         }
         NivelPrioridad saved = nivelPrioridadRepository.save(entity);
         log.info("NivelPrioridad actualizado id={} nombre='{}'", saved.getId(), saved.getNombre());

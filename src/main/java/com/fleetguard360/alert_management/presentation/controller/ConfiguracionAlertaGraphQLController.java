@@ -40,12 +40,6 @@ public class ConfiguracionAlertaGraphQLController {
     }
 
     @QueryMapping
-    public List<ConfiguracionAlertaResponse> configuracionesByNivelPrioridadId(@Argument Integer nivelPrioridadId) {
-        log.debug("GraphQL Query: configuracionesByNivelPrioridadId nivelPrioridadId={}", nivelPrioridadId);
-        return configuracionAlertaService.findByNivelPrioridadId(nivelPrioridadId);
-    }
-
-    @QueryMapping
     public List<ConfiguracionAlertaResponse> configuracionesByUsuarioResponsableId(@Argument Long usuarioResponsableId) {
         log.debug("GraphQL Query: configuracionesByUsuarioResponsableId usuarioResponsableId={}", usuarioResponsableId);
         return configuracionAlertaService.findByUsuarioResponsableId(usuarioResponsableId);
@@ -53,7 +47,7 @@ public class ConfiguracionAlertaGraphQLController {
 
     @MutationMapping
     public ConfiguracionAlertaResponse createConfiguracionAlerta(@Argument("input") @Valid ConfiguracionAlertaCreateRequest input) {
-        log.debug("GraphQL Mutation: createConfiguracionAlerta tipoAlertaId={} nivelPrioridadId={} usuarioResponsableId={}", input.tipoAlertaId(), input.nivelPrioridadId(), input.usuarioResponsableId());
+        log.debug("GraphQL Mutation: createConfiguracionAlerta tipoAlertaId={} usuarioResponsableId={}", input.tipoAlertaId(), input.usuarioResponsableId());
         return configuracionAlertaService.create(input);
     }
 

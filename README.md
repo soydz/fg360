@@ -18,8 +18,7 @@ src/main/java/com/fleetguard360/alert_management/
 │   ├── DTO/              # Data Transfer Objects (organized by domain)
 │   │   ├── tipoalerta/   # Alert Type DTOs
 │   │   ├── nivelprioridad/ # Priority Level DTOs
-│   │   ├── configuracionalerta/ # Alert Configuration DTOs
-│   │   └── common/       # Shared DTOs
+│   │   └── configuracionalerta/ # Alert Configuration DTOs
 │   └── advice/           # Global Exception Handler
 ├── service/              # Business Logic layer
 │   ├── interfaces/       # Service Contracts
@@ -35,13 +34,28 @@ src/main/java/com/fleetguard360/alert_management/
 ## 🚀 Features
 
 ### Core Entities
-- **TipoAlerta (Alert Type)**: Catalog of available alert types with activation/deactivation capability
-- **NivelPrioridad (Priority Level)**: Priority levels with color coding for visual representation
-- **ConfiguracionAlerta (Alert Configuration)**: Links alert types with priority levels and responsible users
+
+#### 1. **TipoAlerta (Alert Type)**
+- Catalog of available alert types with comprehensive information
+- **New Features**:
+  - **Priority Level Integration**: Each alert type has an associated priority level
+  - **Responsible Type**: Defines who should handle the alert (conductor, mechanic, technical support, logistics operator, security)
+  - Activation/deactivation capability
+  - Unique name validation
+
+#### 2. **NivelPrioridad (Priority Level)**
+- Simplified priority levels for alerts
+- **Streamlined Design**: Removed color coding for simpler management
+- Unique name validation
+
+#### 3. **ConfiguracionAlerta (Alert Configuration)**
+- **Simplified Model**: Links alert types with specific responsible users
+- **Streamlined Design**: Removed redundant fields (priority is now in TipoAlerta)
+- Duplicate prevention logic
 
 ### Key Capabilities
-- ✅ **CRUD Operations** for all entities via GraphQL API
-- ✅ **Data Validation** with comprehensive validation rules
+- ✅ **Complete CRUD Operations** for all entities via GraphQL API
+- ✅ **Comprehensive Data Validation** with Spring Boot Validation
 - ✅ **Business Logic Validation** (duplicate prevention, referential integrity)
 - ✅ **Global Exception Handling** with structured error responses
 - ✅ **Automatic Mapping** between entities and DTOs using MapStruct
@@ -49,281 +63,254 @@ src/main/java/com/fleetguard360/alert_management/
 - ✅ **Comprehensive Logging** for monitoring and debugging
 - ✅ **Database Relationships** with proper JPA configurations
 
-## 🛠️ Technology Stack
+## 📊 Data Model
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Java** | 21 | Programming Language |
-| **Spring Boot** | 3.5.5 | Application Framework |
-| **Spring Data JPA** | 3.5.5 | Data Access |
-| **Spring GraphQL** | Latest | GraphQL API |
-| **PostgreSQL** | Latest | Database |
-| **MapStruct** | 1.5.5 | Object Mapping |
-| **Lombok** | Latest | Code Generation |
-| **Jakarta Validation** | Latest | Data Validation |
+### Entity Relationships
+```
+TipoAlerta (Alert Type)
+├── id: Integer (PK)
+├── nombre: String (unique)
+├── descripcion: String
+├── nivelPrioridad: NivelPrioridad (ManyToOne)
+├── tipoEncargado: TipoEncargado (enum)
+└── activo: Boolean
 
-## 📋 Prerequisites
+NivelPrioridad (Priority Level)
+├── id: Integer (PK)
+└── nombre: String (unique)
 
-- **Java 21** or higher
-- **PostgreSQL** 12+ running on localhost:5432
-- **Gradle** 8+ (or use included wrapper)
-- **Git** for version control
+ConfiguracionAlerta (Alert Configuration)
+├── id: Integer (PK)
+├── tipoAlerta: TipoAlerta (ManyToOne)
+└── usuarioResponsableId: Long
 
-## 🚀 Quick Start
-
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd alert-management
+TipoEncargado (Enum)
+├── CONDUCTOR
+├── MECANICO
+├── SOPORTE_TECNICO
+├── OPERADOR_LOGISTICA
+└── SEGURIDAD
 ```
 
+## 🛠️ Technology Stack
 
+- **Java 21** - Programming language
+- **Spring Boot 3.5.5** - Application framework
+- **Spring Data JPA** - Data persistence layer
+- **GraphQL** - API query language
+- **MapStruct** - Bean mapping framework
+- **PostgreSQL** - Database (recommended)
+- **Lombok** - Boilerplate code reduction
+- **SLF4J + Logback** - Logging framework
 
-## 📡 API Documentation
+## 🚀 Getting Started
 
-### GraphQL Endpoint
-- **URL**: `http://localhost:8084/graphql`
-- **GraphiQL IDE**: `http://localhost:8084/graphiql` (for development)
+### Prerequisites
+- Java 21 or higher
+- PostgreSQL database
+- Maven 3.6+ or use included wrapper
 
-### Core Operations
+### Installation
 
-#### Alert Types (TipoAlerta)
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd alert-management
+   ```
+
+2. **Configure database**
+   ```properties
+   # application.properties
+   spring.datasource.url=jdbc:postgresql://localhost:5432/alert_management
+   spring.datasource.username=your_username
+   spring.datasource.password=your_password
+   ```
+
+3. **Run the application**
+   ```bash
+   ./gradlew bootRun
+   ```
+
+4. **Access GraphQL Playground**
+   ```
+   http://localhost:8080/graphiql
+   ```
+
+## 📝 API Usage
+
+### GraphQL Endpoints
+
+#### Creating an Alert Type
 ```graphql
-# Query all alert types
+mutation {
+  createTipoAlerta(input: {
+    nombre: "Engine Failure"
+    descripcion: "Critical engine system failure alert"
+    nivelPrioridadId: 1
+    tipoEncargado: MECANICO
+  }) {
+    id
+    nombre
+    descripcion
+    nivelPrioridad {
+      id
+      nombre
+    }
+    tipoEncargado
+    activo
+  }
+}
+```
+
+#### Querying Alert Types
+```graphql
 query {
   tipoAlertas {
     id
     nombre
     descripcion
-    activo
-  }
-}
-
-# Create new alert type
-mutation {
-  createTipoAlerta(input: {
-    nombre: "Engine Failure"
-    descripcion: "Critical engine malfunction alert"
-  }) {
-    id
-    nombre
-    activo
-  }
-}
-
-# Update alert type
-mutation {
-  updateTipoAlerta(id: 1, input: {
-    nombre: "Engine Critical Failure"
-    activo: true
-  }) {
-    id
-    nombre
-    activo
-  }
-}
-```
-
-#### Priority Levels (NivelPrioridad)
-```graphql
-# Query all priority levels
-query {
-  nivelesPrioridad {
-    id
-    nombre
-    colorHex
-  }
-}
-
-# Create priority level
-mutation {
-  createNivelPrioridad(input: {
-    nombre: "Critical"
-    colorHex: "#FF0000"
-  }) {
-    id
-    nombre
-    colorHex
-  }
-}
-```
-
-#### Alert Configurations (ConfiguracionAlerta)
-```graphql
-# Query alert configurations
-query {
-  configuracionesAlerta {
-    id
-    tipoAlerta {
-      nombre
-    }
     nivelPrioridad {
       nombre
-      colorHex
     }
-    usuarioResponsableId
-    parametroDisparador
+    tipoEncargado
+    activo
   }
 }
+```
 
-# Create alert configuration
+#### Creating Alert Configuration
+```graphql
 mutation {
   createConfiguracionAlerta(input: {
     tipoAlertaId: 1
-    nivelPrioridadId: 1
     usuarioResponsableId: 12345
-    parametroDisparador: "temperature > 80"
   }) {
     id
+    tipoAlerta {
+      nombre
+      tipoEncargado
+    }
     usuarioResponsableId
   }
 }
 ```
 
-## 🗄️ Database Schema
+## 🏗️ Project Structure
 
-### Tables Structure
-```sql
--- Alert Types
-CREATE TABLE tipo_alerta (
-    id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL UNIQUE,
-    descripcion TEXT,
-    activo BOOLEAN NOT NULL DEFAULT true
-);
-
--- Priority Levels
-CREATE TABLE nivel_prioridad (
-    id SERIAL PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL UNIQUE,
-    color_hex VARCHAR(7)
-);
-
--- Alert Configurations
-CREATE TABLE configuracion_alerta (
-    id SERIAL PRIMARY KEY,
-    tipo_alerta_id INTEGER NOT NULL REFERENCES tipo_alerta(id),
-    nivel_prioridad_id INTEGER NOT NULL REFERENCES nivel_prioridad(id),
-    usuario_responsable_id BIGINT NOT NULL,
-    parametro_disparador VARCHAR(255),
-    UNIQUE(tipo_alerta_id, nivel_prioridad_id, usuario_responsable_id)
-);
+### DTOs Organization
 ```
+DTO/
+├── tipoalerta/
+│   ├── TipoAlertaCreateRequest.java
+│   ├── TipoAlertaUpdateRequest.java
+│   └── TipoAlertaResponse.java
+├── nivelprioridad/
+│   ├── NivelPrioridadCreateRequest.java
+│   ├── NivelPrioridadUpdateRequest.java
+│   └── NivelPrioridadResponse.java
+└── configuracionalerta/
+    ├── ConfiguracionAlertaCreateRequest.java
+    ├── ConfiguracionAlertaUpdateRequest.java
+    └── ConfiguracionAlertaResponse.java
+```
+
+### Service Layer
+- **Interfaces**: Define service contracts
+- **Implementations**: Contain business logic with comprehensive validation
+- **Exceptions**: Custom business exceptions for specific error scenarios
+
+### Validation Features
+- **Field Validation**: Using Spring Boot Validation annotations
+- **Business Logic Validation**: Duplicate prevention, relationship validation
+- **Error Handling**: Structured error responses with meaningful messages
+
+## 🧪 Development
+
+### Building the Project
+```bash
+./gradlew build
+```
+
+### Running Tests
+```bash
+./gradlew test
+```
+
+### Generating Documentation
+```bash
+./gradlew javadoc
+```
+
+## 📈 Business Rules
+
+### Alert Type Management
+- ✅ Alert type names must be unique (case-insensitive)
+- ✅ Each alert type must have an associated priority level
+- ✅ Each alert type must specify a responsible type (enum)
+- ✅ Alert types can be activated/deactivated
+- ✅ Cannot delete alert types referenced by configurations
+
+### Priority Level Management
+- ✅ Priority level names must be unique (case-insensitive)
+- ✅ Cannot delete priority levels referenced by alert types
+
+### Alert Configuration Management
+- ✅ Cannot have duplicate configurations (same alert type + user)
+- ✅ Must reference existing alert types
+- ✅ User responsibility is handled externally (by ID reference)
 
 ## 🔧 Configuration
 
 ### Application Properties
 ```properties
-# Application Configuration
-spring.application.name=alert-management
-server.port=8084
-spring.profiles.active=dev
-
-# Database Configuration (dev profile)
-spring.datasource.url=jdbc:postgresql://localhost:5432/fleetguard_db
-spring.datasource.username=${DB_USERNAME:postgres}
-spring.datasource.password=${DB_PASSWORD:your_password}
+# Database Configuration
+spring.datasource.url=jdbc:postgresql://localhost:5432/alert_management
+spring.datasource.username=${DB_USERNAME:alert_user}
+spring.datasource.password=${DB_PASSWORD:alert_password}
 
 # JPA Configuration
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.show-sql=false
 spring.jpa.properties.hibernate.format_sql=true
+
+# GraphQL Configuration
+spring.graphql.graphiql.enabled=true
+spring.graphql.graphiql.path=/graphiql
+
+# Logging Configuration
+logging.level.com.fleetguard360.alert_management=DEBUG
+logging.level.org.springframework.web=INFO
 ```
 
-## 🧪 Testing
+## 📋 TODO / Roadmap
 
-### Run Tests
-```bash
-./gradlew test
-```
+- [ ] Add integration tests
+- [ ] Implement caching layer (Redis)
+- [ ] Add audit logging
+- [ ] Implement event publishing (Kafka/RabbitMQ)
+- [ ] Add API rate limiting
+- [ ] Implement soft delete functionality
+- [ ] Add API versioning support
+- [ ] Create database migration scripts
+- [ ] Add monitoring and health checks
+- [ ] Implement bulk operations
 
-### Test Coverage
-```bash
-./gradlew jacocoTestReport
-```
+## 🤝 Contributing
 
-## 📝 API Validation Rules
-
-### TipoAlerta (Alert Type)
-- `nombre`: Required, max 100 characters, unique
-- `descripcion`: Optional, max 1000 characters
-
-### NivelPrioridad (Priority Level)
-- `nombre`: Required, max 50 characters, unique
-- `colorHex`: Optional, must match pattern `#[A-Fa-f0-9]{6}`
-
-### ConfiguracionAlerta (Alert Configuration)
-- `tipoAlertaId`: Required, must be positive, must exist
-- `nivelPrioridadId`: Required, must be positive, must exist
-- `usuarioResponsableId`: Required, must be positive
-- `parametroDisparador`: Optional, max 255 characters
-- Unique constraint on (tipoAlertaId, nivelPrioridadId, usuarioResponsableId)
-
-## 🚨 Error Handling
-
-The API provides structured error responses:
-
-```json
-{
-  "timestamp": "2025-09-21T10:30:00Z",
-  "status": 400,
-  "error": "Bad Request",
-  "message": "nombre: nombre es obligatorio",
-  "path": "/graphql",
-  "traceId": "abc123"
-}
-```
-
-### Common Error Codes
-- **400 Bad Request**: Validation errors
-- **404 Not Found**: Entity not found
-- **409 Conflict**: Duplicate data or constraint violations
-- **500 Internal Server Error**: Unexpected errors
-
-## 🔍 Monitoring and Logging
-
-### Logging Levels
-- **DEBUG**: Detailed operation logs
-- **INFO**: Important business events
-- **WARN**: Business rule violations
-- **ERROR**: System errors
-
-### Log Examples
-```
-INFO  - TipoAlerta creado id=1 nombre='Engine Failure'
-WARN  - Intento de crear TipoAlerta duplicado nombre='Engine Failure'
-DEBUG - Actualizando ConfiguracionAlerta id=5
-```
-
-## 🚀 Deployment
-
-### Docker Support (Future Enhancement)
-```dockerfile
-FROM openjdk:21-jre-slim
-COPY build/libs/alert-management-*.jar app.jar
-EXPOSE 8084
-ENTRYPOINT ["java", "-jar", "/app.jar"]
-```
-
-### Environment Variables
-```bash
-export DB_USERNAME=postgres
-export DB_PASSWORD=secure_password
-export SPRING_PROFILES_ACTIVE=prod
-```
-
-### Code Style
-- Follow Java naming conventions
-- Use Lombok annotations for boilerplate code
-- Write comprehensive JavaDoc for public APIs
-- Maintain clean architecture separation
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 📞 Support
+
+For support and questions, please contact the FleetGuard360 development team or create an issue in the repository.
 
 ---
 
-**FleetGuard360 Team** - 
+**FleetGuard360 Alert Management Microservice** - Managing alerts efficiently and reliably.

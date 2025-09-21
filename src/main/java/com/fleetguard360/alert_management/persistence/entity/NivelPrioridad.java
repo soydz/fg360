@@ -24,8 +24,4 @@ public class NivelPrioridad {
 
     @Column(nullable = false, unique = true, length = 50)
     private String nombre;
-
-    @Column(name = "color_hex", length = 7)
-    private String colorHex;
 }
-

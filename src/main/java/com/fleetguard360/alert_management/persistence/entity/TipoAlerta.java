@@ -28,7 +28,15 @@ public class TipoAlerta {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
+    // Relación Muchos a Uno: Muchos tipos de alerta pueden tener el mismo Nivel de Prioridad.
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "nivel_prioridad_id", nullable = false)
+    private NivelPrioridad nivelPrioridad;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_encargado", nullable = false, length = 50)
+    private TipoEncargado tipoEncargado;
+
     @Column(nullable = false)
     private boolean activo = true;
 }
-

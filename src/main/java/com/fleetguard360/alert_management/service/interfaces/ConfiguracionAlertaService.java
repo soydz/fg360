@@ -14,6 +14,5 @@ public interface ConfiguracionAlertaService {
     List<ConfiguracionAlertaResponse> listAll();
 
     List<ConfiguracionAlertaResponse> findByTipoAlertaId(Integer tipoAlertaId);
-    List<ConfiguracionAlertaResponse> findByNivelPrioridadId(Integer nivelPrioridadId);
     List<ConfiguracionAlertaResponse> findByUsuarioResponsableId(Long usuarioResponsableId);
 }

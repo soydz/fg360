@@ -8,7 +8,7 @@ import lombok.Setter;
 
 /**
  * Entidad central que define una regla de negocio para una alerta,
- * vinculando un tipo, una prioridad y un responsable.
+ * vinculando un tipo y un responsable específico.
  */
 @Entity
 @Table(name = "configuracion_alerta")
@@ -27,15 +27,6 @@ public class ConfiguracionAlerta {
     @JoinColumn(name = "tipo_alerta_id", nullable = false)
     private TipoAlerta tipoAlerta;
 
-    // Relación Muchos a Uno: Muchas configuraciones pueden tener la misma Prioridad.
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "nivel_prioridad_id", nullable = false)
-    private NivelPrioridad nivelPrioridad;
-
     @Column(name = "usuario_responsable_id", nullable = false)
     private Long usuarioResponsableId;
-
-    @Column(name = "parametro_disparador", length = 255)
-    private String parametroDisparador;
 }
-

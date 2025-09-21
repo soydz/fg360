@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {TipoAlertaMapper.class, NivelPrioridadMapper.class})
+@Mapper(componentModel = "spring", uses = {TipoAlertaMapper.class})
 public interface ConfiguracionAlertaMapper {
     ConfiguracionAlertaResponse toResponse(ConfiguracionAlerta entity);
     List<ConfiguracionAlertaResponse> toResponses(List<ConfiguracionAlerta> entities);

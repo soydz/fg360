@@ -1,7 +1,9 @@
 package com.fleetguard360.alert_management.service.implementation;
 
 import com.fleetguard360.alert_management.configuration.mapper.TipoAlertaMapper;
+import com.fleetguard360.alert_management.persistence.entity.NivelPrioridad;
 import com.fleetguard360.alert_management.persistence.entity.TipoAlerta;
+import com.fleetguard360.alert_management.persistence.repository.NivelPrioridadRepository;
 import com.fleetguard360.alert_management.persistence.repository.TipoAlertaRepository;
 
 import com.fleetguard360.alert_management.presentation.DTO.tipoalerta.TipoAlertaCreateRequest;
@@ -25,22 +27,32 @@ import java.util.List;
 public class TipoAlertaServiceImpl implements TipoAlertaService {
 
     private final TipoAlertaRepository tipoAlertaRepository;
+    private final NivelPrioridadRepository nivelPrioridadRepository;
     private final TipoAlertaMapper mapper;
 
     @Override
     public TipoAlertaResponse create(TipoAlertaCreateRequest request) {
         log.debug("Creando TipoAlerta nombre='{}'", request.nombre());
         String normalizedNombre = request.nombre().trim();
+
         if (tipoAlertaRepository.existsByNombreIgnoreCase(normalizedNombre)) {
             log.warn("Intento de crear TipoAlerta duplicado nombre='{}'", normalizedNombre);
             throw new ConflictException("Ya existe un TipoAlerta con ese nombre");
         }
+
+        // Validar que existe el nivel de prioridad
+        NivelPrioridad nivelPrioridad = nivelPrioridadRepository.findById(request.nivelPrioridadId())
+                .orElseThrow(() -> NotFoundException.forResource("NivelPrioridad", "id", request.nivelPrioridadId()));
+
         TipoAlerta entity = new TipoAlerta();
         entity.setNombre(normalizedNombre);
         entity.setDescripcion(request.descripcion());
+        entity.setNivelPrioridad(nivelPrioridad);
+        entity.setTipoEncargado(request.tipoEncargado());
         entity.setActivo(true);
+
         TipoAlerta saved = tipoAlertaRepository.save(entity);
-        log.info("TipoAlerta creado id={} nombre='{}'", saved.getId(), saved.getNombre());
+        log.info("TipoAlerta creado id={} nombre='{}' tipoEncargado={}", saved.getId(), saved.getNombre(), saved.getTipoEncargado());
         return mapper.toResponse(saved);
     }
 
@@ -59,12 +71,25 @@ public class TipoAlertaServiceImpl implements TipoAlertaService {
             }
             entity.setNombre(normalizedNombre);
         }
+
         if (request.descripcion() != null) {
             entity.setDescripcion(request.descripcion());
         }
+
+        if (request.nivelPrioridadId() != null) {
+            NivelPrioridad nivelPrioridad = nivelPrioridadRepository.findById(request.nivelPrioridadId())
+                    .orElseThrow(() -> NotFoundException.forResource("NivelPrioridad", "id", request.nivelPrioridadId()));
+            entity.setNivelPrioridad(nivelPrioridad);
+        }
+
+        if (request.tipoEncargado() != null) {
+            entity.setTipoEncargado(request.tipoEncargado());
+        }
+
         if (request.activo() != null) {
             entity.setActivo(request.activo());
         }
+
         TipoAlerta saved = tipoAlertaRepository.save(entity);
         log.info("TipoAlerta actualizado id={} activo={}", saved.getId(), saved.isActivo());
         return mapper.toResponse(saved);

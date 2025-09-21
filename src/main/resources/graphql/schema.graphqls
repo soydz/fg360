@@ -1,59 +1,64 @@
 scalar Long
 
+enum TipoEncargado {
+  CONDUCTOR
+  MECANICO
+  SOPORTE_TECNICO
+  OPERADOR_LOGISTICA
+  SEGURIDAD
+}
+
 type TipoAlerta {
   id: Int!
   nombre: String!
   descripcion: String
+  nivelPrioridad: NivelPrioridad!
+  tipoEncargado: TipoEncargado!
   activo: Boolean!
 }
 
 type NivelPrioridad {
   id: Int!
   nombre: String!
-  colorHex: String
 }
 
 type ConfiguracionAlerta {
   id: Int!
   tipoAlerta: TipoAlerta!
-  nivelPrioridad: NivelPrioridad!
   usuarioResponsableId: Long!
-  parametroDisparador: String
 }
 
 input TipoAlertaCreateInput {
   nombre: String!
   descripcion: String
+  nivelPrioridadId: Int!
+  tipoEncargado: TipoEncargado!
 }
 
 input TipoAlertaUpdateInput {
   nombre: String
   descripcion: String
+  nivelPrioridadId: Int
+  tipoEncargado: TipoEncargado
   activo: Boolean
 }
 
 input NivelPrioridadCreateInput {
   nombre: String!
-  colorHex: String
 }
 
 input NivelPrioridadUpdateInput {
   nombre: String
-  colorHex: String
 }
 
 input ConfiguracionAlertaCreateInput {
   tipoAlertaId: Int!
-  nivelPrioridadId: Int!
   usuarioResponsableId: Long!
-  parametroDisparador: String
 }
 
 input ConfiguracionAlertaUpdateInput {
   tipoAlertaId: Int
-  nivelPrioridadId: Int
   usuarioResponsableId: Long
-  parametroDisparador: String
 }
 
 type Query {
@@ -66,7 +71,6 @@ type Query {
   configuracionAlerta(id: Int!): ConfiguracionAlerta!
   configuracionesAlerta: [ConfiguracionAlerta!]!
   configuracionesByTipoAlertaId(tipoAlertaId: Int!): [ConfiguracionAlerta!]!
-  configuracionesByNivelPrioridadId(nivelPrioridadId: Int!): [ConfiguracionAlerta!]!
   configuracionesByUsuarioResponsableId(usuarioResponsableId: Long!): [ConfiguracionAlerta!]!
 }
 
@@ -85,4 +89,3 @@ type Mutation {
   updateConfiguracionAlerta(id: Int!, input: ConfiguracionAlertaUpdateInput!): ConfiguracionAlerta!
   deleteConfiguracionAlerta(id: Int!): Boolean!
 }
-
