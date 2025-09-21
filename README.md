@@ -313,14 +313,6 @@ export DB_PASSWORD=secure_password
 export SPRING_PROFILES_ACTIVE=prod
 ```
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ### Code Style
 - Follow Java naming conventions
 - Use Lombok annotations for boilerplate code
