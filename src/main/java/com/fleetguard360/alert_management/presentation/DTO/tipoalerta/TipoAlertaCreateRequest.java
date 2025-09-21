@@ -1,4 +1,4 @@
-package com.fleetguard360.alert_management.presentation.DTO;
+package com.fleetguard360.alert_management.presentation.DTO.tipoalerta;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,4 +10,3 @@ public record TipoAlertaCreateRequest(
         @Size(max = 1000, message = "descripcion debe tener máximo 1000 caracteres")
         String descripcion
 ) {}
-

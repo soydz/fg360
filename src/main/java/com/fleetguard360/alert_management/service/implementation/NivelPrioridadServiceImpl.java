@@ -1,9 +1,12 @@
 package com.fleetguard360.alert_management.service.implementation;
 
+import com.fleetguard360.alert_management.configuration.mapper.NivelPrioridadMapper;
 import com.fleetguard360.alert_management.persistence.entity.NivelPrioridad;
 import com.fleetguard360.alert_management.persistence.repository.NivelPrioridadRepository;
-import com.fleetguard360.alert_management.presentation.DTO.NivelPrioridadCreateRequest;
-import com.fleetguard360.alert_management.presentation.DTO.NivelPrioridadUpdateRequest;
+
+import com.fleetguard360.alert_management.presentation.DTO.nivelprioridad.NivelPrioridadCreateRequest;
+import com.fleetguard360.alert_management.presentation.DTO.nivelprioridad.NivelPrioridadResponse;
+import com.fleetguard360.alert_management.presentation.DTO.nivelprioridad.NivelPrioridadUpdateRequest;
 import com.fleetguard360.alert_management.service.exception.ConflictException;
 import com.fleetguard360.alert_management.service.exception.NotFoundException;
 import com.fleetguard360.alert_management.service.interfaces.NivelPrioridadService;
@@ -22,9 +25,10 @@ import java.util.List;
 public class NivelPrioridadServiceImpl implements NivelPrioridadService {
 
     private final NivelPrioridadRepository nivelPrioridadRepository;
+    private final NivelPrioridadMapper mapper;
 
     @Override
-    public NivelPrioridad create(NivelPrioridadCreateRequest request) {
+    public NivelPrioridadResponse create(NivelPrioridadCreateRequest request) {
         log.debug("Creando NivelPrioridad nombre='{}' color='{}'", request.nombre(), request.colorHex());
         String normalizedNombre = request.nombre().trim();
         if (nivelPrioridadRepository.existsByNombreIgnoreCase(normalizedNombre)) {
@@ -37,11 +41,11 @@ public class NivelPrioridadServiceImpl implements NivelPrioridadService {
         entity.setColorHex(request.colorHex());
         NivelPrioridad saved = nivelPrioridadRepository.save(entity);
         log.info("NivelPrioridad creado id={} nombre='{}'", saved.getId(), saved.getNombre());
-        return saved;
+        return mapper.toResponse(saved);
     }
 
     @Override
-    public NivelPrioridad update(Integer id, NivelPrioridadUpdateRequest request) {
+    public NivelPrioridadResponse update(Integer id, NivelPrioridadUpdateRequest request) {
         log.debug("Actualizando NivelPrioridad id={}", id);
         NivelPrioridad entity = nivelPrioridadRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.forResource("NivelPrioridad", "id", id));
@@ -60,7 +64,7 @@ public class NivelPrioridadServiceImpl implements NivelPrioridadService {
         }
         NivelPrioridad saved = nivelPrioridadRepository.save(entity);
         log.info("NivelPrioridad actualizado id={} nombre='{}'", saved.getId(), saved.getNombre());
-        return saved;
+        return mapper.toResponse(saved);
     }
 
     @Override
@@ -80,16 +84,17 @@ public class NivelPrioridadServiceImpl implements NivelPrioridadService {
 
     @Override
     @Transactional(readOnly = true)
-    public NivelPrioridad getById(Integer id) {
+    public NivelPrioridadResponse getById(Integer id) {
         log.debug("Buscando NivelPrioridad id={}", id);
-        return nivelPrioridadRepository.findById(id)
+        NivelPrioridad entity = nivelPrioridadRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.forResource("NivelPrioridad", "id", id));
+        return mapper.toResponse(entity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<NivelPrioridad> listAll() {
+    public List<NivelPrioridadResponse> listAll() {
         log.debug("Listando todos los NivelPrioridad");
-        return nivelPrioridadRepository.findAll();
+        return mapper.toResponses(nivelPrioridadRepository.findAll());
     }
 }

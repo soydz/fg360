@@ -1,13 +1,15 @@
 package com.fleetguard360.alert_management.service.implementation;
 
+import com.fleetguard360.alert_management.configuration.mapper.ConfiguracionAlertaMapper;
 import com.fleetguard360.alert_management.persistence.entity.ConfiguracionAlerta;
 import com.fleetguard360.alert_management.persistence.entity.NivelPrioridad;
 import com.fleetguard360.alert_management.persistence.entity.TipoAlerta;
 import com.fleetguard360.alert_management.persistence.repository.ConfiguracionAlertaRepository;
 import com.fleetguard360.alert_management.persistence.repository.NivelPrioridadRepository;
 import com.fleetguard360.alert_management.persistence.repository.TipoAlertaRepository;
-import com.fleetguard360.alert_management.presentation.DTO.ConfiguracionAlertaCreateRequest;
-import com.fleetguard360.alert_management.presentation.DTO.ConfiguracionAlertaUpdateRequest;
+import com.fleetguard360.alert_management.presentation.DTO.configuracionalerta.ConfiguracionAlertaCreateRequest;
+import com.fleetguard360.alert_management.presentation.DTO.configuracionalerta.ConfiguracionAlertaResponse;
+import com.fleetguard360.alert_management.presentation.DTO.configuracionalerta.ConfiguracionAlertaUpdateRequest;
 import com.fleetguard360.alert_management.service.exception.ConflictException;
 import com.fleetguard360.alert_management.service.exception.NotFoundException;
 import com.fleetguard360.alert_management.service.interfaces.ConfiguracionAlertaService;
@@ -16,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
@@ -29,9 +30,10 @@ public class ConfiguracionAlertaServiceImpl implements ConfiguracionAlertaServic
     private final ConfiguracionAlertaRepository configuracionAlertaRepository;
     private final TipoAlertaRepository tipoAlertaRepository;
     private final NivelPrioridadRepository nivelPrioridadRepository;
+    private final ConfiguracionAlertaMapper mapper;
 
     @Override
-    public ConfiguracionAlerta create(ConfiguracionAlertaCreateRequest request) {
+    public ConfiguracionAlertaResponse create(ConfiguracionAlertaCreateRequest request) {
         log.debug("Creando ConfiguracionAlerta tipoAlertaId={} nivelPrioridadId={} usuarioResponsableId={}", request.tipoAlertaId(), request.nivelPrioridadId(), request.usuarioResponsableId());
 
         if (configuracionAlertaRepository.existsByTipoAlertaIdAndNivelPrioridadIdAndUsuarioResponsableId(
@@ -53,11 +55,11 @@ public class ConfiguracionAlertaServiceImpl implements ConfiguracionAlertaServic
 
         ConfiguracionAlerta saved = configuracionAlertaRepository.save(entity);
         log.info("ConfiguracionAlerta creada id={} (tipo={}, nivel={}, usuario={})", saved.getId(), request.tipoAlertaId(), request.nivelPrioridadId(), request.usuarioResponsableId());
-        return saved;
+        return mapper.toResponse(saved);
     }
 
     @Override
-    public ConfiguracionAlerta update(Integer id, ConfiguracionAlertaUpdateRequest request) {
+    public ConfiguracionAlertaResponse update(Integer id, ConfiguracionAlertaUpdateRequest request) {
         log.debug("Actualizando ConfiguracionAlerta id={}", id);
 
         ConfiguracionAlerta entity = configuracionAlertaRepository.findById(id)
@@ -101,7 +103,7 @@ public class ConfiguracionAlertaServiceImpl implements ConfiguracionAlertaServic
 
         ConfiguracionAlerta saved = configuracionAlertaRepository.save(entity);
         log.info("ConfiguracionAlerta actualizada id={} (tipo={}, nivel={}, usuario={})", saved.getId(), saved.getTipoAlerta().getId(), saved.getNivelPrioridad().getId(), saved.getUsuarioResponsableId());
-        return saved;
+        return mapper.toResponse(saved);
     }
 
     @Override
@@ -121,37 +123,38 @@ public class ConfiguracionAlertaServiceImpl implements ConfiguracionAlertaServic
 
     @Override
     @Transactional(readOnly = true)
-    public ConfiguracionAlerta getById(Integer id) {
+    public ConfiguracionAlertaResponse getById(Integer id) {
         log.debug("Buscando ConfiguracionAlerta id={}", id);
-        return configuracionAlertaRepository.findById(id)
+        ConfiguracionAlerta entity = configuracionAlertaRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.forResource("ConfiguracionAlerta", "id", id));
+        return mapper.toResponse(entity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ConfiguracionAlerta> listAll() {
+    public List<ConfiguracionAlertaResponse> listAll() {
         log.debug("Listando todas las ConfiguracionAlerta");
-        return configuracionAlertaRepository.findAll();
+        return mapper.toResponses(configuracionAlertaRepository.findAll());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ConfiguracionAlerta> findByTipoAlertaId(Integer tipoAlertaId) {
+    public List<ConfiguracionAlertaResponse> findByTipoAlertaId(Integer tipoAlertaId) {
         log.debug("Buscando ConfiguracionAlerta por tipoAlertaId={}", tipoAlertaId);
-        return configuracionAlertaRepository.findByTipoAlertaId(tipoAlertaId);
+        return mapper.toResponses(configuracionAlertaRepository.findByTipoAlertaId(tipoAlertaId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ConfiguracionAlerta> findByNivelPrioridadId(Integer nivelPrioridadId) {
+    public List<ConfiguracionAlertaResponse> findByNivelPrioridadId(Integer nivelPrioridadId) {
         log.debug("Buscando ConfiguracionAlerta por nivelPrioridadId={}", nivelPrioridadId);
-        return configuracionAlertaRepository.findByNivelPrioridadId(nivelPrioridadId);
+        return mapper.toResponses(configuracionAlertaRepository.findByNivelPrioridadId(nivelPrioridadId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ConfiguracionAlerta> findByUsuarioResponsableId(Long usuarioResponsableId) {
+    public List<ConfiguracionAlertaResponse> findByUsuarioResponsableId(Long usuarioResponsableId) {
         log.debug("Buscando ConfiguracionAlerta por usuarioResponsableId={}", usuarioResponsableId);
-        return configuracionAlertaRepository.findByUsuarioResponsableId(usuarioResponsableId);
+        return mapper.toResponses(configuracionAlertaRepository.findByUsuarioResponsableId(usuarioResponsableId));
     }
 }

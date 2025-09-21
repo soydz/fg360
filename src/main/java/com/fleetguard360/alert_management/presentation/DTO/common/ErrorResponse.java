@@ -1,4 +1,4 @@
-package com.fleetguard360.alert_management.presentation.DTO;
+package com.fleetguard360.alert_management.presentation.DTO.common;
 
 import java.time.OffsetDateTime;
 
@@ -10,4 +10,3 @@ public record ErrorResponse(
         String path,
         String traceId
 ) { }
-

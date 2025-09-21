@@ -1,0 +1,88 @@
+scalar Long
+
+type TipoAlerta {
+  id: Int!
+  nombre: String!
+  descripcion: String
+  activo: Boolean!
+}
+
+type NivelPrioridad {
+  id: Int!
+  nombre: String!
+  colorHex: String
+}
+
+type ConfiguracionAlerta {
+  id: Int!
+  tipoAlerta: TipoAlerta!
+  nivelPrioridad: NivelPrioridad!
+  usuarioResponsableId: Long!
+  parametroDisparador: String
+}
+
+input TipoAlertaCreateInput {
+  nombre: String!
+  descripcion: String
+}
+
+input TipoAlertaUpdateInput {
+  nombre: String
+  descripcion: String
+  activo: Boolean
+}
+
+input NivelPrioridadCreateInput {
+  nombre: String!
+  colorHex: String
+}
+
+input NivelPrioridadUpdateInput {
+  nombre: String
+  colorHex: String
+}
+
+input ConfiguracionAlertaCreateInput {
+  tipoAlertaId: Int!
+  nivelPrioridadId: Int!
+  usuarioResponsableId: Long!
+  parametroDisparador: String
+}
+
+input ConfiguracionAlertaUpdateInput {
+  tipoAlertaId: Int
+  nivelPrioridadId: Int
+  usuarioResponsableId: Long
+  parametroDisparador: String
+}
+
+type Query {
+  tipoAlerta(id: Int!): TipoAlerta!
+  tipoAlertas: [TipoAlerta!]!
+
+  nivelPrioridad(id: Int!): NivelPrioridad!
+  nivelesPrioridad: [NivelPrioridad!]!
+
+  configuracionAlerta(id: Int!): ConfiguracionAlerta!
+  configuracionesAlerta: [ConfiguracionAlerta!]!
+  configuracionesByTipoAlertaId(tipoAlertaId: Int!): [ConfiguracionAlerta!]!
+  configuracionesByNivelPrioridadId(nivelPrioridadId: Int!): [ConfiguracionAlerta!]!
+  configuracionesByUsuarioResponsableId(usuarioResponsableId: Long!): [ConfiguracionAlerta!]!
+}
+
+type Mutation {
+  createTipoAlerta(input: TipoAlertaCreateInput!): TipoAlerta!
+  updateTipoAlerta(id: Int!, input: TipoAlertaUpdateInput!): TipoAlerta!
+  activateTipoAlerta(id: Int!): TipoAlerta!
+  deactivateTipoAlerta(id: Int!): TipoAlerta!
+  deleteTipoAlerta(id: Int!): Boolean!
+
+  createNivelPrioridad(input: NivelPrioridadCreateInput!): NivelPrioridad!
+  updateNivelPrioridad(id: Int!, input: NivelPrioridadUpdateInput!): NivelPrioridad!
+  deleteNivelPrioridad(id: Int!): Boolean!
+
+  createConfiguracionAlerta(input: ConfiguracionAlertaCreateInput!): ConfiguracionAlerta!
+  updateConfiguracionAlerta(id: Int!, input: ConfiguracionAlertaUpdateInput!): ConfiguracionAlerta!
+  deleteConfiguracionAlerta(id: Int!): Boolean!
+}
+

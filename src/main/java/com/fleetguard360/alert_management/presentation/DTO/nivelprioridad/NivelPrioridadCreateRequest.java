@@ -1,4 +1,4 @@
-package com.fleetguard360.alert_management.presentation.DTO;
+package com.fleetguard360.alert_management.presentation.DTO.nivelprioridad;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -11,4 +11,3 @@ public record NivelPrioridadCreateRequest(
         @Pattern(regexp = "^#[A-Fa-f0-9]{6}$", message = "colorHex inválido. Formato esperado: #RRGGBB")
         String colorHex
 ) {}
-

@@ -1,5 +1,4 @@
-package com.fleetguard360.alert_management.presentation.DTO;
-
+package com.fleetguard360.alert_management.presentation.DTO.tipoalerta;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

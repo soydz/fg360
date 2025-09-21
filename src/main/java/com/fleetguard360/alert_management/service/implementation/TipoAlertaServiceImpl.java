@@ -1,9 +1,12 @@
 package com.fleetguard360.alert_management.service.implementation;
 
+import com.fleetguard360.alert_management.configuration.mapper.TipoAlertaMapper;
 import com.fleetguard360.alert_management.persistence.entity.TipoAlerta;
 import com.fleetguard360.alert_management.persistence.repository.TipoAlertaRepository;
-import com.fleetguard360.alert_management.presentation.DTO.TipoAlertaCreateRequest;
-import com.fleetguard360.alert_management.presentation.DTO.TipoAlertaUpdateRequest;
+
+import com.fleetguard360.alert_management.presentation.DTO.tipoalerta.TipoAlertaCreateRequest;
+import com.fleetguard360.alert_management.presentation.DTO.tipoalerta.TipoAlertaResponse;
+import com.fleetguard360.alert_management.presentation.DTO.tipoalerta.TipoAlertaUpdateRequest;
 import com.fleetguard360.alert_management.service.exception.ConflictException;
 import com.fleetguard360.alert_management.service.exception.NotFoundException;
 import com.fleetguard360.alert_management.service.interfaces.TipoAlertaService;
@@ -22,9 +25,10 @@ import java.util.List;
 public class TipoAlertaServiceImpl implements TipoAlertaService {
 
     private final TipoAlertaRepository tipoAlertaRepository;
+    private final TipoAlertaMapper mapper;
 
     @Override
-    public TipoAlerta create(TipoAlertaCreateRequest request) {
+    public TipoAlertaResponse create(TipoAlertaCreateRequest request) {
         log.debug("Creando TipoAlerta nombre='{}'", request.nombre());
         String normalizedNombre = request.nombre().trim();
         if (tipoAlertaRepository.existsByNombreIgnoreCase(normalizedNombre)) {
@@ -37,11 +41,11 @@ public class TipoAlertaServiceImpl implements TipoAlertaService {
         entity.setActivo(true);
         TipoAlerta saved = tipoAlertaRepository.save(entity);
         log.info("TipoAlerta creado id={} nombre='{}'", saved.getId(), saved.getNombre());
-        return saved;
+        return mapper.toResponse(saved);
     }
 
     @Override
-    public TipoAlerta update(Integer id, TipoAlertaUpdateRequest request) {
+    public TipoAlertaResponse update(Integer id, TipoAlertaUpdateRequest request) {
         log.debug("Actualizando TipoAlerta id={}", id);
         TipoAlerta entity = tipoAlertaRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.forResource("TipoAlerta", "id", id));
@@ -63,7 +67,7 @@ public class TipoAlertaServiceImpl implements TipoAlertaService {
         }
         TipoAlerta saved = tipoAlertaRepository.save(entity);
         log.info("TipoAlerta actualizado id={} activo={}", saved.getId(), saved.isActivo());
-        return saved;
+        return mapper.toResponse(saved);
     }
 
     @Override
@@ -83,40 +87,43 @@ public class TipoAlertaServiceImpl implements TipoAlertaService {
 
     @Override
     @Transactional(readOnly = true)
-    public TipoAlerta getById(Integer id) {
+    public TipoAlertaResponse getById(Integer id) {
         log.debug("Buscando TipoAlerta id={}", id);
-        return tipoAlertaRepository.findById(id)
+        TipoAlerta entity = tipoAlertaRepository.findById(id)
                 .orElseThrow(() -> NotFoundException.forResource("TipoAlerta", "id", id));
+        return mapper.toResponse(entity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TipoAlerta> listAll() {
+    public List<TipoAlertaResponse> listAll() {
         log.debug("Listando todos los TipoAlerta");
-        return tipoAlertaRepository.findAll();
+        return mapper.toResponses(tipoAlertaRepository.findAll());
     }
 
     @Override
-    public TipoAlerta activate(Integer id) {
+    public TipoAlertaResponse activate(Integer id) {
         log.debug("Activando TipoAlerta id={}", id);
-        TipoAlerta entity = getById(id);
+        TipoAlerta entity = tipoAlertaRepository.findById(id)
+                .orElseThrow(() -> NotFoundException.forResource("TipoAlerta", "id", id));
         if (!entity.isActivo()) {
             entity.setActivo(true);
-            tipoAlertaRepository.save(entity);
+            entity = tipoAlertaRepository.save(entity);
             log.info("TipoAlerta activado id={}", id);
         }
-        return entity;
+        return mapper.toResponse(entity);
     }
 
     @Override
-    public TipoAlerta deactivate(Integer id) {
+    public TipoAlertaResponse deactivate(Integer id) {
         log.debug("Desactivando TipoAlerta id={}", id);
-        TipoAlerta entity = getById(id);
+        TipoAlerta entity = tipoAlertaRepository.findById(id)
+                .orElseThrow(() -> NotFoundException.forResource("TipoAlerta", "id", id));
         if (entity.isActivo()) {
             entity.setActivo(false);
-            tipoAlertaRepository.save(entity);
+            entity = tipoAlertaRepository.save(entity);
             log.info("TipoAlerta desactivado id={}", id);
         }
-        return entity;
+        return mapper.toResponse(entity);
     }
 }

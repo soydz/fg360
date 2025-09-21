@@ -1,9 +1,8 @@
 package com.fleetguard360.alert_management.presentation.advice;
 
-import com.fleetguard360.alert_management.presentation.DTO.ErrorResponse;
+import com.fleetguard360.alert_management.presentation.DTO.common.ErrorResponse;
 import com.fleetguard360.alert_management.service.exception.BadRequestException;
 import com.fleetguard360.alert_management.service.exception.ConflictException;
-import com.fleetguard360.alert_management.service.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +18,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex, HttpServletRequest request) {
-        log.warn("404 Not Found: {} - path={}", ex.getMessage(), request.getRequestURI());
-        return build(HttpStatus.NOT_FOUND, ex.getMessage(), request);
-    }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
