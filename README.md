@@ -26,7 +26,10 @@ Use the following GraphQL mutation to login:
 ```graphql
 mutation {
   login(email: "user@example.com", password: "yourPassword") {
+    email
     jwt
+    message
+    status
   }
 }
 ```
