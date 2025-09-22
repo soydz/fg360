@@ -1,5 +1,6 @@
 package com.fleetguard360.presentation.advice;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fleetguard360.presentation.dto.ApiErrorResDTO;
 import com.fleetguard360.service.exception.InvalidCredentialsException;
 import com.fleetguard360.service.exception.ResourceNotFoundException;
@@ -34,5 +35,16 @@ public class GlobalExceptionHandler {
                         ex.getMessage(),
                         Instant.now()
                 ));
+    }
+
+    @ExceptionHandler(value = JWTVerificationException.class)
+    public ResponseEntity<ApiErrorResDTO> handlerJWTVerification(JWTVerificationException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body( new ApiErrorResDTO(
+                        HttpStatus.UNAUTHORIZED,
+                        request.getRequestURI(),
+                        ex.getMessage(),
+                        Instant.now()
+                        ));
     }
 }

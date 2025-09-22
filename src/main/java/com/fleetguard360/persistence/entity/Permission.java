@@ -23,6 +23,6 @@ public class Permission {
     private PermissionEnum permission;
 
     @ManyToMany(mappedBy = "permissions")
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
-
 }
