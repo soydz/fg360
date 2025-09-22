@@ -17,13 +17,5 @@ The application runs on port **8085** by default.
 ![Java](https://img.shields.io/badge/Java-%23ED8B00.svg?logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=white)
 ![GraphQL](https://img.shields.io/badge/GraphQL-E10098?logo=graphql&logoColor=white)
-![Swagger](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=black)
+![OpenFeign](https://img.shields.io/badge/OpenFeign-007ACC)
 ![JUnit](https://img.shields.io/badge/JUnit-25A162?logo=junit5&logoColor=white)
-
-
-
-## 📚 Swagger
-
-You can explore and test the API from **Swagger UI**:
-
-http://localhost:8085/swagger-ui/index.html
