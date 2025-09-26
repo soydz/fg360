@@ -9,41 +9,54 @@
 ![GraphQL](https://img.shields.io/badge/GraphQL-E10098?logo=graphql&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-000000?logo=JSON%20web%20tokens&logoColor=white)
 
-## API Gateway
-This project is the API Gateway for the microservices architecture. 
-It serves as the main entry point for frontend clients, handling request routing,
-JWT authentication, CORS, and communication with backend services.
+## 🌐 API Gateway
+Este proyecto es el **API Gateway** para la arquitectura de microservicios.  
+Funciona como punto de entrada principal para los clientes frontend, gestionando:
 
-The gateway centralizes security, simplifies the frontend's access to multiple microservices,
-and ensures a clean, scalable, and maintainable architecture.
+- Enrutamiento de peticiones
+- Autenticación mediante **JWT**
+- Configuración de **CORS**
+- Comunicación con los microservicios backend
 
-The application runs on port **8085** by default.
+El gateway centraliza la seguridad, simplifica el acceso desde el frontend y asegura una arquitectura limpia, escalable y mantenible.
 
-## 🛣️ Available Endpoints
+👉 La aplicación corre en el puerto **8080** por defecto.
 
-The API Gateway routes requests to two main microservices:
+---
 
-### 1. Authentication Service - `/auth/login`
-- **Purpose**: Handles user authentication
-- **Route**: `POST /auth/login` 
-- **Security**: Open endpoint (no JWT token required)
+## 🛣️ Endpoints Disponibles
+
+El API Gateway enruta solicitudes a dos microservicios principales:
+
+### 1. 🔐 Authentication Service - `/auth/**`
+- **Propósito**: Maneja la autenticación de usuarios  
+- **Ruta principal**: `POST /auth/login`  
+- **Seguridad**: Endpoint abierto (no requiere JWT para login)  
 - **Content-Type**: `application/json`
 
-📚 **For detailed API documentation, visit the [Authentication Service Repository](https://github.com/your-org/auth-service)**
+📚 **Repositorio**: [auth-service](https://github.com/CodeFactory-FleetGuard360-EV04/authentication.git)
 
-### 2. Alerts Service (GraphQL) - `/alerts/graphql/**`
-- **Purpose**: Handles alert management through GraphQL
-- **Route**: All requests to `/alerts/graphql/`
-- **Security**: Protected endpoint (requires JWT token)
-- **Content-Type**: `application/json`
-- **Examples**:
-  - `POST /alerts/graphql` - GraphQL queries and mutations
-  - Access GraphQL Playground at `/alerts/graphql` (if enabled)
+---
 
-📚 **For detailed GraphQL schema and queries, visit the [Alerts Service Repository](https://github.com/your-org/alerts-service)**
+### 2. 🔔 Alerts Service (GraphQL) - `/alerts/graphql/**`
+- **Propósito**: Gestión de alertas vía **GraphQL**  
+- **Ruta principal**: `POST /alerts/graphql`  
+- **Seguridad**: Endpoint protegido (requiere JWT válido)  
+- **Content-Type**: `application/json`  
+- **Ejemplos**:  
+  - `POST /alerts/graphql` → consultas y mutaciones GraphQL  
+  - Acceso al **GraphQL Playground** (si está habilitado) en `/alerts/graphql`
 
-## 🔐 Authentication Flow
+📚 **Repositorio**: [alerts-service](https://github.com/CodeFactory-FleetGuard360-EV04/alerts-service.git)
 
-1. **Login**: Send credentials to `/auth/login` to get JWT token
-2. **Protected Requests**: Include JWT token in `Authorization: Bearer <token>` header
-3. **GraphQL Operations**: Use the token to access `/alerts/graphql` endpoint
+---
+
+## 🔐 Flujo de Autenticación
+
+1. El usuario envía sus credenciales a `POST /auth/login`.
+2. El **Authentication Service** responde con un **JWT** válido.
+3. El cliente usa este token en la cabecera `Authorization: Bearer <token>`.
+4. El **API Gateway** valida el JWT antes de redirigir la petición al microservicio correspondiente.
+5. Solo peticiones con un token válido acceden a los servicios protegidos como `/alerts/graphql/**`.
+
+---
