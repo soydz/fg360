@@ -2,7 +2,26 @@ server:
   port: "${SPRING_PORT}"
 spring:
   config:
-    import: "optional:file:.env[.properties]"
-auth:
-  service:
-    url: "${AUTH_SERVICE_URL}"
+        import: "optional:file:.env[.properties]"
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: "auth-service"
+              uri: "${AUTH_SERVICE_URI}"
+              predicates:
+                - Path=/auth/**
+              filters:
+                - RewritePath=/auth/(?<segment>.*), /api/v1/auth/${segment}
+            - id: "alerts-service"
+              uri: "${ALERTS_SERVICE_URI}"
+              predicates:
+                - Path=/alerts/graphql/**
+              filters:
+                - AuthenticationFilter
+                - RewritePath=/alerts/(?<segment>.*), /${segment}
+jwt:
+  key: "${SECURITY_JWT_KEY_PRIVATE}"
