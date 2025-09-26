@@ -46,18 +46,6 @@ public class TipoAlertaGraphQLController {
     }
 
     @MutationMapping
-    public TipoAlertaResponse activateTipoAlerta(@Argument Integer id) {
-        log.debug("GraphQL Mutation: activateTipoAlerta id={}", id);
-        return tipoAlertaService.activate(id);
-    }
-
-    @MutationMapping
-    public TipoAlertaResponse deactivateTipoAlerta(@Argument Integer id) {
-        log.debug("GraphQL Mutation: deactivateTipoAlerta id={}", id);
-        return tipoAlertaService.deactivate(id);
-    }
-
-    @MutationMapping
     public Boolean deleteTipoAlerta(@Argument Integer id) {
         log.debug("GraphQL Mutation: deleteTipoAlerta id={}", id);
         tipoAlertaService.delete(id);

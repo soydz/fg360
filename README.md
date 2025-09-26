@@ -5,7 +5,7 @@
 [![GraphQL](https://img.shields.io/badge/GraphQL-Enabled-e10098.svg)](https://graphql.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue.svg)](https://www.postgresql.org/)
 
-A robust microservice for managing alert configurations in the FleetGuard360 ecosystem. This service provides comprehensive CRUD operations for alert types, priority levels, and alert configurations through a GraphQL API.
+A robust microservice for managing alert types and priority levels in the FleetGuard360 ecosystem. This service provides comprehensive CRUD operations for alert types and priority levels through a GraphQL API with a simplified and efficient architecture.
 
 ## 🏗️ Architecture Overview
 
@@ -17,8 +17,7 @@ src/main/java/com/fleetguard360/alert_management/
 │   ├── controller/        # GraphQL Controllers
 │   ├── DTO/              # Data Transfer Objects (organized by domain)
 │   │   ├── tipoalerta/   # Alert Type DTOs
-│   │   ├── nivelprioridad/ # Priority Level DTOs
-│   │   └── configuracionalerta/ # Alert Configuration DTOs
+│   │   └── nivelprioridad/ # Priority Level DTOs
 │   └── advice/           # Global Exception Handler
 ├── service/              # Business Logic layer
 │   ├── interfaces/       # Service Contracts
@@ -35,26 +34,19 @@ src/main/java/com/fleetguard360/alert_management/
 
 ### Core Entities
 
-#### 1. **TipoAlerta (Alert Type)**
-- Catalog of available alert types with comprehensive information
-- **New Features**:
-  - **Priority Level Integration**: Each alert type has an associated priority level
-  - **Responsible Type**: Defines who should handle the alert (conductor, mechanic, technical support, logistics operator, security)
-  - Activation/deactivation capability
-  - Unique name validation
+#### 1. **TipoAlerta (Alert Type)** - Complete Alert Configuration
+- **Self-contained alert definition** with all necessary configuration
+- **Priority Level Integration**: Each alert type has an associated priority level
+- **Responsible Area**: Defines which area should handle the alert (conductor, mechanic, technical support, logistics operator, security)
+- **Simplified Model**: No separate configuration needed - everything is defined in the alert type
 
-#### 2. **NivelPrioridad (Priority Level)**
-- Simplified priority levels for alerts
-- **Streamlined Design**: Removed color coding for simpler management
-- Unique name validation
-
-#### 3. **ConfiguracionAlerta (Alert Configuration)**
-- **Simplified Model**: Links alert types with specific responsible users
-- **Streamlined Design**: Removed redundant fields (priority is now in TipoAlerta)
-- Duplicate prevention logic
+#### 2. **NivelPrioridad (Priority Level)** - Simple Priority Catalog
+- **Streamlined priority levels** for alerts
+- **Clean design**: Simple name-based priority system
+- **Reusable**: Multiple alert types can share the same priority level
 
 ### Key Capabilities
-- ✅ **Complete CRUD Operations** for all entities via GraphQL API
+- ✅ **Complete CRUD Operations** for both entities via GraphQL API
 - ✅ **Comprehensive Data Validation** with Spring Boot Validation
 - ✅ **Business Logic Validation** (duplicate prevention, referential integrity)
 - ✅ **Global Exception Handling** with structured error responses
@@ -67,24 +59,18 @@ src/main/java/com/fleetguard360/alert_management/
 
 ### Entity Relationships
 ```
-TipoAlerta (Alert Type)
+TipoAlerta (Alert Type) - Complete Alert Configuration
 ├── id: Integer (PK)
 ├── nombre: String (unique)
 ├── descripcion: String
 ├── nivelPrioridad: NivelPrioridad (ManyToOne)
-├── tipoEncargado: TipoEncargado (enum)
-└── activo: Boolean
+└── tipoEncargado: TipoEncargado (enum)
 
-NivelPrioridad (Priority Level)
+NivelPrioridad (Priority Level) - Simple Priority Catalog
 ├── id: Integer (PK)
 └── nombre: String (unique)
 
-ConfiguracionAlerta (Alert Configuration)
-├── id: Integer (PK)
-├── tipoAlerta: TipoAlerta (ManyToOne)
-└── usuarioResponsableId: Long
-
-TipoEncargado (Enum)
+TipoEncargado (Enum) - Responsible Areas
 ├── CONDUCTOR
 ├── MECANICO
 ├── SOPORTE_TECNICO
@@ -108,7 +94,7 @@ TipoEncargado (Enum)
 ### Prerequisites
 - Java 21 or higher
 - PostgreSQL database
-- Maven 3.6+ or use included wrapper
+- Gradle 8.x+ or use included wrapper
 
 ### Installation
 
@@ -140,7 +126,7 @@ TipoEncargado (Enum)
 
 ### GraphQL Endpoints
 
-#### Creating an Alert Type
+#### Creating a Complete Alert Type
 ```graphql
 mutation {
   createTipoAlerta(input: {
@@ -157,12 +143,11 @@ mutation {
       nombre
     }
     tipoEncargado
-    activo
   }
 }
 ```
 
-#### Querying Alert Types
+#### Querying Alert Types with Complete Information
 ```graphql
 query {
   tipoAlertas {
@@ -173,24 +158,18 @@ query {
       nombre
     }
     tipoEncargado
-    activo
   }
 }
 ```
 
-#### Creating Alert Configuration
+#### Creating Priority Levels
 ```graphql
 mutation {
-  createConfiguracionAlerta(input: {
-    tipoAlertaId: 1
-    usuarioResponsableId: 12345
+  createNivelPrioridad(input: {
+    nombre: "Critical"
   }) {
     id
-    tipoAlerta {
-      nombre
-      tipoEncargado
-    }
-    usuarioResponsableId
+    nombre
   }
 }
 ```
@@ -204,18 +183,14 @@ DTO/
 │   ├── TipoAlertaCreateRequest.java
 │   ├── TipoAlertaUpdateRequest.java
 │   └── TipoAlertaResponse.java
-├── nivelprioridad/
-│   ├── NivelPrioridadCreateRequest.java
-│   ├── NivelPrioridadUpdateRequest.java
-│   └── NivelPrioridadResponse.java
-└── configuracionalerta/
-    ├── ConfiguracionAlertaCreateRequest.java
-    ├── ConfiguracionAlertaUpdateRequest.java
-    └── ConfiguracionAlertaResponse.java
+└── nivelprioridad/
+    ├── NivelPrioridadCreateRequest.java
+    ├── NivelPrioridadUpdateRequest.java
+    └── NivelPrioridadResponse.java
 ```
 
 ### Service Layer
-- **Interfaces**: Define service contracts
+- **Interfaces**: Define service contracts for TipoAlerta and NivelPrioridad
 - **Implementations**: Contain business logic with comprehensive validation
 - **Exceptions**: Custom business exceptions for specific error scenarios
 
@@ -246,18 +221,14 @@ DTO/
 ### Alert Type Management
 - ✅ Alert type names must be unique (case-insensitive)
 - ✅ Each alert type must have an associated priority level
-- ✅ Each alert type must specify a responsible type (enum)
-- ✅ Alert types can be activated/deactivated
-- ✅ Cannot delete alert types referenced by configurations
+- ✅ Each alert type must specify a responsible area (enum)
+- ✅ Alert types are self-contained - no additional configuration needed
+- ✅ Cannot delete alert types if they would cause referential integrity issues
 
 ### Priority Level Management
 - ✅ Priority level names must be unique (case-insensitive)
 - ✅ Cannot delete priority levels referenced by alert types
-
-### Alert Configuration Management
-- ✅ Cannot have duplicate configurations (same alert type + user)
-- ✅ Must reference existing alert types
-- ✅ User responsibility is handled externally (by ID reference)
+- ✅ Simple, reusable priority catalog
 
 ## 🔧 Configuration
 
@@ -289,11 +260,22 @@ logging.level.org.springframework.web=INFO
 - [ ] Add audit logging
 - [ ] Implement event publishing (Kafka/RabbitMQ)
 - [ ] Add API rate limiting
-- [ ] Implement soft delete functionality
-- [ ] Add API versioning support
 - [ ] Create database migration scripts
 - [ ] Add monitoring and health checks
 - [ ] Implement bulk operations
+- [ ] Add search and filtering capabilities
+
+## 💡 Architecture Benefits
+
+### Simplified Model
+- **No separate configuration entity** - everything is defined in TipoAlerta
+- **Reduced complexity** - fewer entities and relationships to manage
+- **Self-contained alerts** - each alert type has all necessary information
+
+### Enum-based Responsible Areas
+- **Type safety** - compile-time validation of responsible areas
+- **Performance** - no additional database lookups needed
+- **Consistency** - standardized set of responsible areas across the system
 
 ## 🤝 Contributing
 
@@ -313,4 +295,4 @@ For support and questions, please contact the FleetGuard360 development team or 
 
 ---
 
-**FleetGuard360 Alert Management Microservice** - Managing alerts efficiently and reliably.
+**FleetGuard360 Alert Management Microservice** - Simplified, efficient alert management.

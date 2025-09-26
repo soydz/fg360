@@ -8,6 +8,5 @@ public record TipoAlertaResponse(
         String nombre,
         String descripcion,
         NivelPrioridadResponse nivelPrioridad,
-        TipoEncargado tipoEncargado,
-        boolean activo
+        TipoEncargado tipoEncargado
 ) {}

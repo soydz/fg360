@@ -12,6 +12,4 @@ public interface TipoAlertaService {
     void delete(Integer id);
     TipoAlertaResponse getById(Integer id);
     List<TipoAlertaResponse> listAll();
-    TipoAlertaResponse activate(Integer id);
-    TipoAlertaResponse deactivate(Integer id);
 }

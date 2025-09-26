@@ -49,7 +49,6 @@ public class TipoAlertaServiceImpl implements TipoAlertaService {
         entity.setDescripcion(request.descripcion());
         entity.setNivelPrioridad(nivelPrioridad);
         entity.setTipoEncargado(request.tipoEncargado());
-        entity.setActivo(true);
 
         TipoAlerta saved = tipoAlertaRepository.save(entity);
         log.info("TipoAlerta creado id={} nombre='{}' tipoEncargado={}", saved.getId(), saved.getNombre(), saved.getTipoEncargado());
@@ -86,12 +85,8 @@ public class TipoAlertaServiceImpl implements TipoAlertaService {
             entity.setTipoEncargado(request.tipoEncargado());
         }
 
-        if (request.activo() != null) {
-            entity.setActivo(request.activo());
-        }
-
         TipoAlerta saved = tipoAlertaRepository.save(entity);
-        log.info("TipoAlerta actualizado id={} activo={}", saved.getId(), saved.isActivo());
+        log.info("TipoAlerta actualizado id={}", saved.getId());
         return mapper.toResponse(saved);
     }
 
@@ -124,31 +119,5 @@ public class TipoAlertaServiceImpl implements TipoAlertaService {
     public List<TipoAlertaResponse> listAll() {
         log.debug("Listando todos los TipoAlerta");
         return mapper.toResponses(tipoAlertaRepository.findAll());
-    }
-
-    @Override
-    public TipoAlertaResponse activate(Integer id) {
-        log.debug("Activando TipoAlerta id={}", id);
-        TipoAlerta entity = tipoAlertaRepository.findById(id)
-                .orElseThrow(() -> NotFoundException.forResource("TipoAlerta", "id", id));
-        if (!entity.isActivo()) {
-            entity.setActivo(true);
-            entity = tipoAlertaRepository.save(entity);
-            log.info("TipoAlerta activado id={}", id);
-        }
-        return mapper.toResponse(entity);
-    }
-
-    @Override
-    public TipoAlertaResponse deactivate(Integer id) {
-        log.debug("Desactivando TipoAlerta id={}", id);
-        TipoAlerta entity = tipoAlertaRepository.findById(id)
-                .orElseThrow(() -> NotFoundException.forResource("TipoAlerta", "id", id));
-        if (entity.isActivo()) {
-            entity.setActivo(false);
-            entity = tipoAlertaRepository.save(entity);
-            log.info("TipoAlerta desactivado id={}", id);
-        }
-        return mapper.toResponse(entity);
     }
 }

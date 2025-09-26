@@ -36,7 +36,4 @@ public class TipoAlerta {
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_encargado", nullable = false, length = 50)
     private TipoEncargado tipoEncargado;
-
-    @Column(nullable = false)
-    private boolean activo = true;
 }

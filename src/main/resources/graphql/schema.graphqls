@@ -14,18 +14,11 @@ type TipoAlerta {
   descripcion: String
   nivelPrioridad: NivelPrioridad!
   tipoEncargado: TipoEncargado!
-  activo: Boolean!
 }
 
 type NivelPrioridad {
   id: Int!
   nombre: String!
-}
-
-type ConfiguracionAlerta {
-  id: Int!
-  tipoAlerta: TipoAlerta!
-  usuarioResponsableId: Long!
 }
 
 input TipoAlertaCreateInput {
@@ -40,7 +33,6 @@ input TipoAlertaUpdateInput {
   descripcion: String
   nivelPrioridadId: Int
   tipoEncargado: TipoEncargado
-  activo: Boolean
 }
 
 input NivelPrioridadCreateInput {
@@ -51,41 +43,20 @@ input NivelPrioridadUpdateInput {
   nombre: String
 }
 
-input ConfiguracionAlertaCreateInput {
-  tipoAlertaId: Int!
-  usuarioResponsableId: Long!
-}
-
-input ConfiguracionAlertaUpdateInput {
-  tipoAlertaId: Int
-  usuarioResponsableId: Long
-}
-
 type Query {
   tipoAlerta(id: Int!): TipoAlerta!
   tipoAlertas: [TipoAlerta!]!
 
   nivelPrioridad(id: Int!): NivelPrioridad!
   nivelesPrioridad: [NivelPrioridad!]!
-
-  configuracionAlerta(id: Int!): ConfiguracionAlerta!
-  configuracionesAlerta: [ConfiguracionAlerta!]!
-  configuracionesByTipoAlertaId(tipoAlertaId: Int!): [ConfiguracionAlerta!]!
-  configuracionesByUsuarioResponsableId(usuarioResponsableId: Long!): [ConfiguracionAlerta!]!
 }
 
 type Mutation {
   createTipoAlerta(input: TipoAlertaCreateInput!): TipoAlerta!
   updateTipoAlerta(id: Int!, input: TipoAlertaUpdateInput!): TipoAlerta!
-  activateTipoAlerta(id: Int!): TipoAlerta!
-  deactivateTipoAlerta(id: Int!): TipoAlerta!
   deleteTipoAlerta(id: Int!): Boolean!
 
   createNivelPrioridad(input: NivelPrioridadCreateInput!): NivelPrioridad!
   updateNivelPrioridad(id: Int!, input: NivelPrioridadUpdateInput!): NivelPrioridad!
   deleteNivelPrioridad(id: Int!): Boolean!
-
-  createConfiguracionAlerta(input: ConfiguracionAlertaCreateInput!): ConfiguracionAlerta!
-  updateConfiguracionAlerta(id: Int!, input: ConfiguracionAlertaUpdateInput!): ConfiguracionAlerta!
-  deleteConfiguracionAlerta(id: Int!): Boolean!
 }

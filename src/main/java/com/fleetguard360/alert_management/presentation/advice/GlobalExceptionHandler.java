@@ -6,66 +6,38 @@ import com.fleetguard360.alert_management.service.exception.NotFoundException;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.schema.DataFetchingEnvironment;
-import jakarta.validation.ConstraintViolationException;
-import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.GraphQlExceptionHandler;
+import org.springframework.graphql.execution.ErrorType;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
-import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.Map;
 
-@Component
-public class GlobalExceptionHandler extends DataFetcherExceptionResolverAdapter {
+@ControllerAdvice
+public class GlobalExceptionHandler {
 
-    @Override
-    protected GraphQLError resolveToSingleError(Throwable ex, DataFetchingEnvironment env) {
-        String traceId = UUID.randomUUID().toString();
-
-        int status;
-        String code;
-        String message = ex.getMessage();
-        List<Map<String, String>> details = new ArrayList<>();
-        Map<String, Object> extensions = new LinkedHashMap<>();
-
-        if (ex instanceof BadRequestException) {
-            status = 400;
-            code = "BAD_REQUEST";
-        } else if (ex instanceof ConflictException) {
-            status = 409;
-            code = "CONFLICT";
-        } else if (ex instanceof NotFoundException) {
-            status = 404;
-            code = "NOT_FOUND";
-        } else if (ex instanceof ConstraintViolationException cve) {
-            status = 400;
-            code = "BAD_REQUEST";
-
-            // Lista de errores detallados
-            details = cve.getConstraintViolations().stream()
-                    .map(v -> Map.of(
-                            "field", v.getPropertyPath().toString(),
-                            "message", v.getMessage()
-                    ))
-                    .toList();
-
-            // Mensaje general
-            message = "Error de validación en uno o más campos";
-
-        } else {
-            status = 500;
-            code = "INTERNAL_ERROR";
-            message = (message != null) ? message : "Unexpected error";
-        }
-
-        extensions.put("code", code);
-        extensions.put("status", status);
-        extensions.put("timestamp", OffsetDateTime.now().toString());
-        extensions.put("traceId", traceId);
-        extensions.put("field", env.getField().getName());
-        if (!details.isEmpty()) extensions.put("details", details);
-
+    @GraphQlExceptionHandler
+    public GraphQLError handleNotFound(NotFoundException ex, DataFetchingEnvironment env) {
         return GraphqlErrorBuilder.newError(env)
-                .message(message)
-                .extensions(extensions)
+                .errorType(ErrorType.NOT_FOUND)
+                .message(ex.getMessage())
+                .build();
+    }
+
+    @GraphQlExceptionHandler
+    public GraphQLError handleBadRequest(BadRequestException ex, DataFetchingEnvironment env) {
+        return GraphqlErrorBuilder.newError(env)
+                .errorType(ErrorType.BAD_REQUEST)
+                .message(ex.getMessage())
+                .extensions(Map.of("code", "BAD_REQUEST"))
+                .build();
+    }
+
+    @GraphQlExceptionHandler
+    public GraphQLError handleConflict(ConflictException ex, DataFetchingEnvironment env) {
+        return GraphqlErrorBuilder.newError(env)
+                .errorType(ErrorType.BAD_REQUEST)
+                .message(ex.getMessage())
+                .extensions(Map.of("code", "CONFLICT"))
                 .build();
     }
 }

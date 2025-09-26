@@ -13,6 +13,5 @@ public record TipoAlertaUpdateRequest(
         String descripcion,
         @Positive(message = "nivelPrioridadId debe ser un número positivo")
         Integer nivelPrioridadId,
-        TipoEncargado tipoEncargado,
-        Boolean activo
+        TipoEncargado tipoEncargado
 ) {}
