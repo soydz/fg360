@@ -23,5 +23,7 @@ spring:
               filters:
                 - AuthenticationFilter
                 - RewritePath=/alerts/(?<segment>.*), /${segment}
+cors:
+  allowed-origins: "${CORS_ALLOWED_ORIGINS}"
 jwt:
   key: "${SECURITY_JWT_KEY_PRIVATE}"
