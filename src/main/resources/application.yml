@@ -1,5 +1,5 @@
 server:
-  port: "${SPRING_PORT}"
+  port: "${AUTH_PORT}"
 spring:
   config:
     import: "optional:file:.env[.properties]"
