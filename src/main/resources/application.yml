@@ -1,0 +1,8 @@
+server:
+  port: "${Notification_PORT}"
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+email:
+  SENDER: "${EMAIL_SENDER}"
+  password: "${EMAIL_PASSWORD}"
