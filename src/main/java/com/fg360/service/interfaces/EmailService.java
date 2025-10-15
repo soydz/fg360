@@ -1,6 +1,8 @@
 package com.fg360.service.interfaces;
 
+import com.fg360.presentation.controller.dto.AlertDTO;
+
 public interface EmailService {
 
-    void sendEmail(String[] toUser, String subject, String message);
+    void sendEmail(AlertDTO alertDTO);
 }

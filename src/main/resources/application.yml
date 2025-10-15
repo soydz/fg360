@@ -3,6 +3,12 @@ server:
 spring:
   config:
     import: "optional:file:.env[.properties]"
+  rabbitmq:
+    host: "${RABBITMQ_HOST}"
+    port: "${RABBITMQ_PORT}"
+    username: "${RABBITMQ_USERNAME}"
+    password: "${RABBITMQ_PASSWORD}"
 email:
   SENDER: "${EMAIL_SENDER}"
   password: "${EMAIL_PASSWORD}"
+
