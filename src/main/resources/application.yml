@@ -8,7 +8,16 @@ spring:
     port: "${RABBITMQ_PORT}"
     username: "${RABBITMQ_USERNAME}"
     password: "${RABBITMQ_PASSWORD}"
+    queue:
+      alert:
+        created:
+          name: "${RABBITMQ_QUEUE_ALERT_CREATED_NAME}"
+    exchange:
+      name: "${RABBITMQ_EXCHANGE_NAME}"
+    routing:
+      alert:
+        created:
+          key: "${RABBITMQ_ALERT_CREATED_ROUTING_KEY}"
 email:
   SENDER: "${EMAIL_SENDER}"
   password: "${EMAIL_PASSWORD}"
-

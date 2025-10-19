@@ -4,5 +4,7 @@ import com.fg360.presentation.controller.dto.AlertDTO;
 
 public interface EmailService {
 
-    void sendEmail(AlertDTO alertDTO);
+    void handleEmail(AlertDTO alertDTO);
+
+    void handlePush(AlertDTO alertDTO);
 }

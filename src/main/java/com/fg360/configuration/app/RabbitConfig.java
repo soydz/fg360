@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,40 +15,39 @@ import org.springframework.context.annotation.Configuration;
 @EnableRabbit
 public class RabbitConfig {
 
-    public static final String NOTIFICATION_EXCHANGE = "notification_exchange";
-    public static final String EMAIL_NOTIFICATION_QUEUE = "email_notification_queue";
-    public static final String PUSH_NOTIFICATION_QUEUE = "push_notification_queue";
-    public static final String EMAIL_SENT_ROUTING_KEY = "email.sent";
-    public static final String PUSH_SENT_ROUTING_KEY = "push.sent";
+    @Value("${spring.rabbitmq.exchange.name}")
+    private String exchange;
+
+    @Value("${spring.rabbitmq.routing.alert.created.key}")
+    private String alertRoutingKey;
+
+    @Value("${spring.rabbitmq.queue.alert.created.name}")
+    private String queueAlertCreated;
 
     // Crea la cola, con true es durable
     @Bean
-    public Queue emailNotificationQueue() {
-        return new Queue(EMAIL_NOTIFICATION_QUEUE, true);
+    public Queue notificationQueue() {
+        return new Queue(queueAlertCreated, true);
     }
 
-    @Bean
-    public Queue pushNotificationQueue() {
-        return new Queue(PUSH_NOTIFICATION_QUEUE, true);
-    }
 
     @Bean
     public DirectExchange notificationExchange() {
-        return new DirectExchange(NOTIFICATION_EXCHANGE);
+        return new DirectExchange(exchange);
     }
 
     @Bean
     public Binding emailBinding(Queue emailNotificationQueue, DirectExchange notificationExchange) {
         return BindingBuilder.bind(emailNotificationQueue)
                 .to(notificationExchange)
-                .with(EMAIL_SENT_ROUTING_KEY);
+                .with(alertRoutingKey);
     }
 
     @Bean
     public Binding pushBinding(Queue pushNotificationQueue, DirectExchange notificationExchange) {
         return BindingBuilder.bind(pushNotificationQueue)
                 .to(notificationExchange)
-                .with(PUSH_SENT_ROUTING_KEY);
+                .with(alertRoutingKey);
     }
 
     @Bean
@@ -62,25 +62,3 @@ public class RabbitConfig {
         return rabbitTemplate;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
