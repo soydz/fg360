@@ -21,3 +21,5 @@ spring:
 email:
   SENDER: "${EMAIL_SENDER}"
   password: "${EMAIL_PASSWORD}"
+frontend:
+  url: "${URL_FRONTEND}"

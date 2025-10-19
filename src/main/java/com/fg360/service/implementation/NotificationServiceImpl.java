@@ -1,7 +1,8 @@
 package com.fg360.service.implementation;
 
 import com.fg360.presentation.controller.dto.AlertDTO;
-import com.fg360.service.interfaces.EmailService;
+import com.fg360.presentation.controller.dto.PushDTO;
+import com.fg360.service.interfaces.NotificationService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
@@ -10,24 +11,29 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Service
-public class EmailServiceImpl implements EmailService {
+public class NotificationServiceImpl implements NotificationService {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
     @Value("${email.sender}")
     private String emailSender;
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public EmailServiceImpl(JavaMailSender mailSender, TemplateEngine templateEngine) {
+    public NotificationServiceImpl(JavaMailSender mailSender, TemplateEngine templateEngine, SimpMessagingTemplate messagingTemplate) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -59,8 +65,17 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    // /app/alert
     @Override
     public void handlePush(AlertDTO alertDTO) {
+        PushDTO pushDTO = new PushDTO(
+                alertDTO.alertType(),
+                alertDTO.generatingUnit(),
+                "En proceso",
+                alertDTO.generationDate()
+        );
+
         logger.info("Notification Push");
+        messagingTemplate.convertAndSend("/all/alerts", pushDTO);
     }
 }
