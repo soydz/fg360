@@ -4,6 +4,8 @@ import com.fleetguard360.persistence.entity.enums.UserIdTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -16,8 +18,9 @@ public class UserIdType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "user_id_type")
+    @Enumerated(EnumType.STRING)
     private UserIdTypeEnum userIdType;
 
-    @OneToOne(mappedBy = "idType")
-    private User user;
+    @OneToMany(mappedBy = "idType")
+    private List<User> users;
 }

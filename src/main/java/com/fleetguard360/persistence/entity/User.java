@@ -33,7 +33,7 @@ public class User {
     @Column(name = "credential_expired", nullable = false)
     private boolean credentialExpired;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "type_of_id", referencedColumnName = "id")
     private UserIdType idType;
 
