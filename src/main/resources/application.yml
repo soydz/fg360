@@ -10,3 +10,19 @@ spring:
     jpa:
       hibernate:
         ddl-auto: "update"
+  rabbitmq:
+    host: "${RABBITMQ_HOST}"
+    port: "${RABBITMQ_PORT}"
+    username: "${RABBITMQ_USERNAME}"
+    password: "${RABBITMQ_PASSWORD}"
+    queue:
+      email:
+        name: "${RABBITMQ_QUEUE_EMAIL_NAME}"
+      push:
+        name: "${RABBITMQ_QUEUE_PUSH_NAME}"
+    exchange:
+      name: "${RABBITMQ_EXCHANGE_NAME}"
+    routing:
+      alert:
+        created:
+          key: "${RABBITMQ_ALERT_CREATED_ROUTING_KEY}"
