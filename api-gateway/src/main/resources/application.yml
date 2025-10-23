@@ -1,0 +1,29 @@
+server:
+  port: "${SPRING_PORT}"
+spring:
+  config:
+        import: "optional:file:.env[.properties]"
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: "auth-service"
+              uri: "${AUTH_SERVICE_URI}"
+              predicates:
+                - Path=/auth/**
+              filters:
+                - RewritePath=/auth/(?<segment>.*), /api/v1/auth/${segment}
+            - id: "alerts-service"
+              uri: "${ALERTS_SERVICE_URI}"
+              predicates:
+                - Path=/alerts/graphql/**
+              filters:
+                - AuthenticationFilter
+                - RewritePath=/alerts/(?<segment>.*), /${segment}
+cors:
+  allowed-origins: "${CORS_ALLOWED_ORIGINS}"
+jwt:
+  key: "${SECURITY_JWT_KEY_PRIVATE}"
