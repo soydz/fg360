@@ -48,7 +48,7 @@ jobs:
           image: soydz/fg360-${{ matrix.service }}
           tags: latest
           registry: docker.io
-          dockerfile: Dockerfile
+          dockerfile: ${{ matrix.service }}/Dockerfile
           directory: ${{ matrix.service }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
