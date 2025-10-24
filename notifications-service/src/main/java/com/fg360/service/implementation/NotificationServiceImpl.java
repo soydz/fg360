@@ -71,7 +71,7 @@ public class NotificationServiceImpl implements NotificationService {
         PushDTO pushDTO = new PushDTO(
                 alertDTO.alertType(),
                 alertDTO.generatingUnit(),
-                "En proceso",
+                alertDTO.state(),
                 alertDTO.generationDate()
         );
 
