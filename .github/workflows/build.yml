@@ -29,8 +29,15 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ matrix.service }}-${{ hashFiles('${{ matrix.service }}/build.gradle', '${{ matrix.service }}/settings.gradle') }}
           restore-keys: |
             ${{ runner.os }}-gradle-${{ matrix.service }}-
+      - name: Debug build
+        run: |
+          set -x
+          pwd
+          ls -R
+          echo "Building microservice ${{ matrix.service }}"
+          ./${{ matrix.service }}/gradlew build -x test
       - name: Build with Gradle
-        run: ./${{ matrix.service }}/gradlew build -x test
+        run: ./${{ matrix.service }}/gradlew build -x test --info
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
