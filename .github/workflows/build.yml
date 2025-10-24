@@ -49,6 +49,6 @@ jobs:
           tags: latest
           registry: docker.io
           dockerfile: Dockerfile
-          context: ${{ matrix.service }}
+          directory: ${{ matrix.service }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
