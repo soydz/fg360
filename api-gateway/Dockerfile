@@ -1,5 +1,5 @@
 # --- Etapa de Construcción (Builder) ---
-FROM gradle:8.7-jdk21-focal AS builder
+FROM gradle:9.1.0-jdk21 AS builder
 WORKDIR /app
 COPY build.gradle.kts settings.gradle.kts gradlew ./
 COPY gradle ./gradle
