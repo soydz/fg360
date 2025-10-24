@@ -24,13 +24,13 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper/
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle', '**/settings.gradle') }}
+            ${{ matrix.service }}/.gradle/caches
+            ${{ matrix.service }}/.gradle/wrapper/
+          key: ${{ runner.os }}-gradle-${{ matrix.service }}-${{ hashFiles('${{ matrix.service }}/build.gradle', '${{ matrix.service }}/settings.gradle') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle-${{ matrix.service }}-
       - name: Build with Gradle
-        run: ./gradlew -p ${{ matrix.service }} build -x test
+        run: ./${{ matrix.service }}/gradlew build -x test
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
